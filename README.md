@@ -1,0 +1,81 @@
+# claude-image-skills
+
+Claude Code 用の **画像生成・画像処理スキル集**（monorepo）。社内共有用。
+
+会話の文脈を1枚のインフォグラフィックにする、AI で LP/UI 画面のデザインを生成して HTML/CSS で実装する、画像を WebP に圧縮する、用途別テンプレートでリサイズする、といった画像まわりの作業を Claude Code から1コマンドで叩けるようになる。
+
+## 収録スキル
+
+| スキル | 何をするか |
+|---|---|
+| [**codex-infographic-gen**](./codex-infographic-gen/) | 会話の文脈を1枚の日本語インフォグラフィック画像（WebP）として生成し、`~/Downloads/` に保存。Codex CLI の image 2.0 (gpt-image-2) で生成。情報量が多ければ複数枚に自動分割 |
+| [**codex-design-to-code**](./codex-design-to-code/) | AI デザイン + AI 実装で LP / 画面 UI を HTML/CSS の動く Web ページとして構築。Codex がカンプ → 分割アセットを並列生成し、Claude が HTML/CSS で組み立てる 2 フェーズ設計 |
+| [**image-compress**](./image-compress/) | 画像（PNG/JPG/WebP）を**品質を落とさず WebP に圧縮**。`--quality 95` 既定。`--lossless` / `--near-lossless` モード切替対応。cwebp → sips → pngquant の 3 段フォールバック |
+| [**image-resize**](./image-resize/) | 画像をリサイズ。`--scale 50%` などのパーセント縮小、`--width/--height/--max-dimension` の手動寸法、`--template ogp / favicon / iphone-icon` 等の用途別テンプレート |
+
+## 依存関係
+
+```
+image-compress（共通ユーティリティ）
+   ▲                ▲
+   │                │
+codex-infographic-gen   codex-design-to-code
+                        （WebP 配信時に呼び出し）
+
+image-resize（独立）
+```
+
+- **image-compress** は他スキルから `bash ~/.claude/skills/image-compress/scripts/compress.sh ...` で直接呼び出される
+- **image-resize** は単体動作、Claude が「リサイズ → 圧縮」のチェーンで他スキルと組み合わせる
+- **codex-* 系**は OpenAI Codex CLI に依存（`npm install -g @openai/codex`）
+
+## 動作要件
+
+- macOS（sips、osascript を使用）
+- Homebrew で `webp`（`brew install webp`）— cwebp の最も安定したフォールバック
+- Node.js 経由で Codex CLI（`npm install -g @openai/codex`）— Codex 系スキルのみ
+
+## インストール
+
+```bash
+# 1. 任意の場所に clone
+git clone git@github.com:xsjd2019/claude-image-skills.git ~/projects/claude-image-skills
+
+# 2. 各スキルを ~/.claude/skills/ に symlink
+for s in codex-infographic-gen codex-design-to-code image-compress image-resize; do
+  ln -s ~/projects/claude-image-skills/$s ~/.claude/skills/$s
+done
+
+# 3. Claude Code を再起動
+# 自動で各スキルが発火可能になる
+```
+
+更新時:
+```bash
+cd ~/projects/claude-image-skills && git pull
+# symlink 経由なので全スキルが同時に最新化される
+```
+
+## トリガー例
+
+普段の使い方:
+
+| 発話 | 発火スキル | 期待される動作 |
+|---|---|---|
+| 「インフォグラフィックにまとめて」 | codex-infographic-gen | 会話文脈 → WebP 1枚を `~/Downloads/` へ |
+| 「LP 作って」 | codex-design-to-code | カンプ生成 → 承認 → 分割アセット並列生成 → HTML/CSS 実装 |
+| 「圧縮して」「webp化して」 | image-compress | 指定画像を WebP に変換 |
+| 「OGP サイズに」「favicon にして」 | image-resize | 指定画像を用途別テンプレートサイズに |
+
+詳細は各スキルの `SKILL.md` を参照。
+
+## 設計原則
+
+- **動作ロジックは `scripts/`、意思決定は `SKILL.md`** — SKILL.md は Claude が「何をするか」を判断、scripts は決定論的に動く
+- **長プロンプト対策** — codex 系は exit 144 を避けるため、プロンプトをファイル経由 + stdin クローズで渡す
+- **ピクセル境界の判断は AI に任せない** — クロップなどは codex に強制せず、出力をそのまま扱う
+- **トンマナはプリセット化**（codex-infographic-gen の `references/styles/<name>.md`）— ブランド一貫性を確保しつつ用途別に切替
+
+## ライセンス・利用
+
+社内利用想定。外部公開不可。
