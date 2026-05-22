@@ -3,7 +3,7 @@
 #
 # 複数の画像を1つの PDF にまとめる。
 # A4 portrait、24pt 余白、中央配置、contain（no upscale）が既定。
-# fuk-manual の pdf-lib 実装と同じレイアウト思想。
+# pdf-lib ベースの Web 実装と同じレイアウト思想（A4 portrait, 24pt 余白, 中央配置, no upscale）。
 #
 # 入力形式:
 #   PNG / JPEG / TIFF: img2pdf が直接埋め込み（再エンコードなし、品質保持）

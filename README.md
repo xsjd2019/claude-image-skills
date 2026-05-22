@@ -80,6 +80,28 @@ cd ~/projects/claude-image-skills && git pull
 - **ピクセル境界の判断は AI に任せない** — クロップなどは codex に強制せず、出力をそのまま扱う
 - **トンマナはプリセット化**（codex-infographic-gen の `references/styles/<name>.md`）— ブランド一貫性を確保しつつ用途別に切替
 
-## ライセンス・利用
+## ライセンス
 
-社内利用想定。外部公開不可。
+MIT License。自由に利用・改変・再配布できます。
+
+```
+Copyright (c) 2026 xsjd2019
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

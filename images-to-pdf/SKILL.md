@@ -7,7 +7,7 @@ description: 複数の画像を1つの PDF にまとめるスキル。A4 portrai
 
 複数の画像（スクショ、写真、図など）を A4 portrait 1 ページ 1 画像で PDF にまとめる。マニュアル化、スクショ集約、報告書作成などに使う。
 
-ロジックは fuk-manual プロジェクトの pdf-lib 実装と同じ思想:
+ロジックは社内の Web 版 pdf-lib 実装と同じ思想:
 - A4 portrait
 - 24pt 余白（4辺）
 - 各画像は contain で中央配置（拡大はしない＝ no upscale）
