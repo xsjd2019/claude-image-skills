@@ -29,7 +29,7 @@ set -e
 
 if [ $# -lt 2 ]; then
   echo "Usage: $0 <input> <output.webp> [--lossless | --near-lossless N | --quality N]" >&2
-  echo "  default: --near-lossless 60（視覚的に劣化なし）" >&2
+  echo "  default: --quality 95（視覚的にロスレス、ファイル軽量）" >&2
   exit 2
 fi
 
