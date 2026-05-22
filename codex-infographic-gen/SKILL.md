@@ -328,7 +328,7 @@ task-notification を受け取ったら:
 | `scripts/wait_for_png.sh` | PNG 出現待ち（300秒タイムアウト + 10KB サイズ検証） |
 | `scripts/notify_done.sh` | macOS 無音通知（osascript display notification） |
 
-**外部依存**: WebP 変換は別スキル **`image-compress`** に委譲（`~/.claude/skills/image-compress/scripts/compress.sh` を直接呼び出す）。near-lossless 既定で品質を保ったまま圧縮される。
+**外部依存**: WebP 変換は別スキル **`image-compress`** に委譲（`~/.claude/skills/image-compress/scripts/compress.sh` を直接呼び出す）。quality 95 既定で視覚的にロスレス + ファイル軽量。
 
 各スクリプトは独立して呼べる（テスト・デバッグ用）。挙動を変えたい時は SKILL.md ではなく該当スクリプトを編集すれば全インフォグラフィックに反映される。
 
