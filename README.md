@@ -1,6 +1,6 @@
 # claude-image-skills
 
-Claude Code 用の **画像生成・画像処理スキル集**（monorepo）。社内共有用。
+Claude Code 用の **画像生成・画像処理スキル集**（monorepo）。
 
 会話の文脈を1枚のインフォグラフィックにする、AI で LP/UI 画面のデザインを生成して HTML/CSS で実装する、画像を WebP に圧縮する、用途別テンプレートでリサイズする、といった画像まわりの作業を Claude Code から1コマンドで叩けるようになる。
 
