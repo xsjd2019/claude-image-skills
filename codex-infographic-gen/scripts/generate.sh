@@ -76,7 +76,9 @@ if [ ! -x "$COMPRESS_SH" ]; then
   echo "Hint: ~/.claude/skills/image-compress/ をインストールしてください" >&2
   exit 3
 fi
-if ! "$COMPRESS_SH" "$PNG_PATH" "$WEBP_PATH"; then
+# --flatten: codex の出力 PNG はアルファチャンネルを持つことがある。そのまま WebP に
+# すると、ダークモードのビューアで背景が黒くなり文字が読めなくなるため、白で塗り潰す。
+if ! "$COMPRESS_SH" "$PNG_PATH" "$WEBP_PATH" --flatten; then
   echo "失敗: WebP 変換エラー" >&2
   exit 3
 fi

@@ -8,6 +8,9 @@
 #   --lossless           : 完全可逆圧縮（情報損失ゼロ、ファイル最大）
 #   --near-lossless <N>  : 視覚的に劣化なし。N=0-100（小さいほど強圧縮）。default: 60
 #   --quality <N>        : 通常のロッシー圧縮。N=0-100。default: 95（視覚的にほぼロスレス）
+#   --flatten [hex]      : 透過を指定色で塗りつぶして不透明にする。default: 0xFFFFFF（白）
+#                          透過のまま書き出すと、ダークモードのビューアで背景が黒くなり
+#                          文字が読めなくなる。資料・図版として配る画像では必ず付ける。
 #
 # 引数なし（input/output のみ）→ quality 95 で実行
 # テキスト・グラフィックス中心の画像なら quality 95 が最適（near-lossless より小さく視覚的に同等）。
@@ -28,7 +31,7 @@
 set -e
 
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 <input> <output.webp> [--lossless | --near-lossless N | --quality N]" >&2
+  echo "Usage: $0 <input> <output.webp> [--lossless | --near-lossless N | --quality N] [--flatten [hex]]" >&2
   echo "  default: --quality 95（視覚的にロスレス、ファイル軽量）" >&2
   exit 2
 fi
@@ -45,6 +48,7 @@ fi
 # モード判定
 MODE="quality"
 LEVEL=95
+FLATTEN=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -62,6 +66,13 @@ while [ $# -gt 0 ]; do
       LEVEL="${2:-95}"
       shift 2
       ;;
+    --flatten)
+      # 次のトークンが色指定なら取り込む。無ければ白。
+      case "${2:-}" in
+        0x*|'#'*) FLATTEN="${2/#\#/0x}"; shift 2 ;;
+        *)        FLATTEN="0xFFFFFF";    shift   ;;
+      esac
+      ;;
     *)
       echo "Unknown option: $1" >&2
       exit 2
@@ -76,10 +87,15 @@ case "$MODE" in
   quality)       CWEBP_ARGS=(-q "$LEVEL") ;;
 esac
 
+# 透過の塗りつぶし。-blend_alpha は指定色で合成したうえでアルファを落とす。
+if [ -n "$FLATTEN" ]; then
+  CWEBP_ARGS+=(-blend_alpha "$FLATTEN")
+fi
+
 # === 1st choice: cwebp（全モード対応） ===
 if command -v cwebp >/dev/null 2>&1; then
   if cwebp "${CWEBP_ARGS[@]}" "$INPUT" -o "$OUTPUT" >/dev/null 2>&1; then
-    echo "ok: cwebp ($MODE${LEVEL:+ $LEVEL})"
+    echo "ok: cwebp ($MODE${LEVEL:+ $LEVEL}${FLATTEN:+, flatten $FLATTEN})"
     exit 0
   fi
 fi
@@ -94,6 +110,9 @@ fi
 
 if command -v sips >/dev/null 2>&1; then
   if sips -s format webp -s formatOptions "$SIPS_Q" "$INPUT" --out "$OUTPUT" >/dev/null 2>&1; then
+    if [ -n "$FLATTEN" ]; then
+      echo "ok: sips (quality $SIPS_Q, $MODE 相当) ※注意: sips は --flatten 非対応。透過が残る可能性がある" >&2
+    fi
     echo "ok: sips (quality $SIPS_Q, $MODE 相当)"
     exit 0
   fi
